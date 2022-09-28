@@ -80,7 +80,7 @@ Swift
     inspector.trackSchema(fromEvent:eventName, eventParams:params)
     debugger.debugEvent(eventName, eventParams:params)
 
-# Using with Avo Functions
+# Using with Avo Codegen
 
 When using Avo generated code you'll be calling the `init` methods. Actual interface of the methods depends on your schema setup, but there will be init or constructor method with `debugger` parameter, where you can pass an instance of `AnalyticsDebugger`.
 
