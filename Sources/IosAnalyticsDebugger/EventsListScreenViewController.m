@@ -23,6 +23,11 @@
 
 @implementation EventsListScreenViewController
 
+- (IBAction)onClearButtonClick:(id)sender {
+    [AnalyticsDebugger.events removeAllObjects];
+    [self.eventsTableView reloadData];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
    
