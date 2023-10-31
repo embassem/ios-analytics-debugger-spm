@@ -14,7 +14,9 @@
 @property (weak, nonatomic) IBOutlet UITextField *filterInput;
 @property (weak, nonatomic) IBOutlet UITableView *eventsTableView;
 @property (weak, nonatomic) IBOutlet UIImageView *closeButtonIcon;
+@property (weak, nonatomic) IBOutlet UIImageView *closeButton;
 @property (weak, nonatomic) IBOutlet UIImageView *avoLogoImage;
+@property (weak, nonatomic) IBOutlet UILabel *closeText;
 
 @property (strong, nonatomic) NSMutableSet *expendedEvents;
 
@@ -75,7 +77,7 @@ NSString * filter;
 - (void)viewDidLoad {
     [super viewDidLoad];
    
-    [self.closeButtonIcon addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissSelf)]];
+    [self.closeButton addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissSelf)]];
     
     self.expendedEvents = [NSMutableSet new];
     [self populateExpended];
