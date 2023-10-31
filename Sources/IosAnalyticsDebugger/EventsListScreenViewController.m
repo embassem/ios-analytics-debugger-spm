@@ -12,7 +12,6 @@
 
 @interface EventsListScreenViewController ()
 @property (weak, nonatomic) IBOutlet UITextField *filterInput;
-@property (weak, nonatomic) IBOutlet UIView *closeButton;
 @property (weak, nonatomic) IBOutlet UITableView *eventsTableView;
 @property (weak, nonatomic) IBOutlet UIImageView *closeButtonIcon;
 @property (weak, nonatomic) IBOutlet UIImageView *avoLogoImage;
@@ -52,11 +51,16 @@ NSString * filter;
     }
 }
 
+- (IBAction)onClearButtonClick:(id)sender {
+    [AnalyticsDebugger.events removeAllObjects];
+    [self.eventsTableView reloadData];
+}
+
 - (IBAction)onToggleFilter:(id)sender {
     if (shownInputFieldConstraint == nil) {
         shownInputFieldConstraint = [NSLayoutConstraint constraintWithItem:self.filterInput attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:34];
     }
-
+    
     if (self.filterInput.isHidden) {
         [self.filterInput setHidden:NO];
         [self.view addConstraint:shownInputFieldConstraint];
@@ -65,12 +69,13 @@ NSString * filter;
         [self.view removeConstraint:shownInputFieldConstraint];
     }
     [self.eventsTableView reloadData];
+
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
    
-    [self.closeButton addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissSelf)]];
+    [self.closeButtonIcon addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissSelf)]];
     
     self.expendedEvents = [NSMutableSet new];
     [self populateExpended];
