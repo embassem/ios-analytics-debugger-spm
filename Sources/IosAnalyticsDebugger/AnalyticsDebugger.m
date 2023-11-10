@@ -54,27 +54,19 @@ NSString *currentSchemaId;
     if (debuggerView != nil) {
         [self hideDebugger];
     }
-
     dispatch_async(dispatch_get_main_queue(), ^(void){
         CGRect screenRect = [[UIScreen mainScreen] bounds];
         CGFloat screenWidth = screenRect.size.width;
         screenHeight = screenRect.size.height;
-
         NSInteger bottomOffset = [Util barBottomOffset];
-
         debuggerView = [[BarDebuggerView alloc] initWithFrame: CGRectMake(0, screenHeight - 52 - bottomOffset, screenWidth, 52) ];
-
         [self showDebuggerViewInWindow];
-
         self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget: self action:@selector(drugBar:)];
-
         [debuggerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openEventsListScreen)]];
         [debuggerView addGestureRecognizer:self.panGestureRecognizer];
-
         if ([analyticsDebuggerEvents count] > 0) {
             [debuggerView showEvent:[analyticsDebuggerEvents objectAtIndex:0]];
         }
-
         [DebuggerAnalytics debuggerStartedWithFrameLocation:nil schemaId:currentSchemaId];
     });
 }
@@ -104,11 +96,10 @@ NSString *currentSchemaId;
         NSInteger bottomOffset = [Util barBottomOffset];
         
         debuggerView = [[BubbleDebuggerView alloc] initWithFrame: CGRectMake(screenWidth - 40, screenHeight - 80 - bottomOffset, 40, 40)];
-
         [self showDebuggerViewInWindow];
-         
+        
         self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget: self action:@selector(drugBubble:)];
-         
+        
         [debuggerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openEventsListScreen)]];
         [debuggerView addGestureRecognizer:self.panGestureRecognizer];
         
@@ -212,7 +203,7 @@ NSString *currentSchemaId;
     [self sendEventToAnalyticsDebugger:event];
 }
 
-- (void) publishEvent:(NSString *) eventName withTimestamp:(NSNumber *) timestamp withProperties:(NSArray<DebuggerProp *> *) props withErrors:(NSArray<DebuggerPropError *> *) errors {
+- (void) publishEvent:(NSString *) eventName withTimestamp:(NSNumber *) timestamp withEventProperties:(NSArray<DebuggerProp *> *) props withUserProperties:(NSArray<DebuggerProp *> *) userProps withErrors:(NSArray<DebuggerPropError *> *) errors {
     
     DebuggerEventItem * event = [DebuggerEventItem new];
     
@@ -221,7 +212,6 @@ NSString *currentSchemaId;
     event.messages = [NSMutableArray new];
     for (id error in errors) {
         DebuggerMessage * debuggerMessage = [self createMessageWithError:error];
-
         if (debuggerMessage != nil) {
             [event.messages addObject:debuggerMessage];
         }
@@ -233,7 +223,18 @@ NSString *currentSchemaId;
         }
     }
     
+    event.userProps = [NSMutableArray new];
+     for (id userProp in userProps) {
+         if (userProp != nil) {
+             [event.userProps addObject:userProp];
+         }
+     }
+    
     [self sendEventToAnalyticsDebugger:event];
+}
+
+- (void) publishEvent:(NSString *) eventName withTimestamp:(NSNumber *) timestamp withProperties:(NSArray<DebuggerProp *> *) props withErrors:(NSArray<DebuggerPropError *> *) errors {
+    [self publishEvent:eventName withTimestamp:timestamp withEventProperties: props withUserProperties: [NSMutableArray new] withErrors: errors];
 }
 
 - (void) publishEvent:(NSString *) eventName withParams:(NSDictionary *) params {
@@ -276,6 +277,15 @@ NSString *currentSchemaId;
     [self sendEventToAnalyticsDebugger:event];
 }
 
+- (NSMutableArray * _Nonnull)sortPropsAlphabetically:(NSMutableArray *) props {
+    return [NSMutableArray arrayWithArray: [
+        props
+        sortedArrayUsingComparator:^NSComparisonResult(DebuggerEventItem *a, DebuggerEventItem *b) {
+            return [a.name compare:b.name options:NSCaseInsensitiveSearch];
+        }]
+    ];
+}
+
 -(void) sendEventToAnalyticsDebugger:(DebuggerEventItem *) event {
     dispatch_async(dispatch_get_main_queue(), ^(void){
         NSInteger insertIndex = 0;
@@ -288,6 +298,10 @@ NSString *currentSchemaId;
                 break;
             }
         }
+        
+        event.eventProps = [self sortPropsAlphabetically:event.eventProps];
+        event.userProps = [self sortPropsAlphabetically:event.userProps];
+        
         [analyticsDebuggerEvents insertObject:event atIndex:insertIndex];
         
         if (debuggerView != nil) {
