@@ -54,27 +54,19 @@ NSString *currentSchemaId;
     if (debuggerView != nil) {
         [self hideDebugger];
     }
-    
     dispatch_async(dispatch_get_main_queue(), ^(void){
         CGRect screenRect = [[UIScreen mainScreen] bounds];
         CGFloat screenWidth = screenRect.size.width;
         screenHeight = screenRect.size.height;
-        
         NSInteger bottomOffset = [Util barBottomOffset];
-        
         debuggerView = [[BarDebuggerView alloc] initWithFrame: CGRectMake(0, screenHeight - 52 - bottomOffset, screenWidth, 52) ];
-        
         [self showDebuggerViewInWindow];
-        
         self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget: self action:@selector(drugBar:)];
-        
         [debuggerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openEventsListScreen)]];
         [debuggerView addGestureRecognizer:self.panGestureRecognizer];
-        
         if ([analyticsDebuggerEvents count] > 0) {
             [debuggerView showEvent:[analyticsDebuggerEvents objectAtIndex:0]];
         }
-        
         [DebuggerAnalytics debuggerStartedWithFrameLocation:nil schemaId:currentSchemaId];
     });
 }
@@ -104,7 +96,6 @@ NSString *currentSchemaId;
         NSInteger bottomOffset = [Util barBottomOffset];
         
         debuggerView = [[BubbleDebuggerView alloc] initWithFrame: CGRectMake(screenWidth - 40, screenHeight - 80 - bottomOffset, 40, 40)];
-        
         [self showDebuggerViewInWindow];
         
         self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget: self action:@selector(drugBubble:)];
@@ -221,7 +212,6 @@ NSString *currentSchemaId;
     event.messages = [NSMutableArray new];
     for (id error in errors) {
         DebuggerMessage * debuggerMessage = [self createMessageWithError:error];
-        
         if (debuggerMessage != nil) {
             [event.messages addObject:debuggerMessage];
         }
