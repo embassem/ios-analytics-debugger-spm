@@ -9,6 +9,7 @@
 #import "EventTableViewCell.h"
 #import "AnalyticsDebugger.h"
 #import "Util.h"
+#import "DebuggerEventItem.h"
 
 @interface EventsListScreenViewController ()
 @property (weak, nonatomic) IBOutlet UITextField *filterInput;
@@ -29,6 +30,13 @@
 
 NSLayoutConstraint * shownInputFieldConstraint;
 NSString * filter;
+
++ (instancetype)eventsListViewController {
+  NSBundle *resBundle = SWIFTPM_MODULE_BUNDLE;
+  
+  EventsListScreenViewController *eventsListViewController = [[EventsListScreenViewController alloc] initWithNibName:@"EventsListScreenViewController" bundle:resBundle];
+  return eventsListViewController;
+}
 
 - (void)onIputFilterTextChanged:(UITextField*)newFilterInput {
 
