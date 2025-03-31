@@ -6,14 +6,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DebuggerEventItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DebuggerEventItem;
 @interface EventsListScreenViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 - (void) setExpendedStatus:(BOOL) expended forEvent:(DebuggerEventItem *) event;
 
++ (instancetype)eventsListViewController;
 @end
 
 NS_ASSUME_NONNULL_END
