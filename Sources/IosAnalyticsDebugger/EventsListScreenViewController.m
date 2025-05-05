@@ -29,7 +29,7 @@
 @implementation EventsListScreenViewController
 
 NSLayoutConstraint * shownInputFieldConstraint;
-NSString * filter;
+NSString * filterString;
 
 + (instancetype)eventsListViewController {
   NSBundle *resBundle = SWIFTPM_MODULE_BUNDLE;
@@ -44,17 +44,17 @@ NSString * filter;
 }
 
 - (void)onIputFilter:(NSString*)newFilter {
-    filter = newFilter;
+    filterString = newFilter;
     [self.eventsTableView reloadData];
 }
 
 - (NSArray *) filteredEvents {
-    if (filter == nil || self.filterInput.isHidden || [filter isEqualToString:@""]) {
+    if (filterString == nil || self.filterInput.isHidden || [filterString isEqualToString:@""]) {
         return [AnalyticsDebugger events];
     } else {
         NSPredicate *filterPredicate =
         [NSPredicate predicateWithFormat:
-         [NSString stringWithFormat:@"SELF.name contains[c] '%@'", filter]];
+         [NSString stringWithFormat:@"SELF.name contains[c] '%@'", filterString]];
          NSArray *filteredArray =
          [[AnalyticsDebugger events] filteredArrayUsingPredicate:filterPredicate];
         return filteredArray;
@@ -122,7 +122,7 @@ NSString * filter;
 - (void)dealloc {
     [AnalyticsDebugger setOnNewEventCallback:nil];
     shownInputFieldConstraint = nil;
-    filter = nil;
+    filterString = nil;
 }
 
 - (void) populateExpended {
